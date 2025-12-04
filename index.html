@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code + Nano Banana Pro | AI Image Generation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 80px 24px 60px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .credits-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .credits-bar a {
+            color: #00d9ff;
+            text-decoration: none;
+        }
+
+        .credits-bar a:hover {
+            text-decoration: underline;
+        }
+
+        .credits-bar span {
+            color: #444;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #888;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .hero-note {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 8px;
+            padding: 16px 24px;
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 0.95rem;
+            color: #bbb;
+            text-align: left;
+        }
+
+        .hero-note strong {
+            color: #a855f7;
+        }
+
+        /* Section */
+        section {
+            padding: 60px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        section:last-of-type {
+            border-bottom: none;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .section-header p {
+            color: #666;
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Command Box */
+        .command-box {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #7ee787;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .command-box .dim {
+            color: #555;
+        }
+
+        /* Image Grid */
+        .image-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-5 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: 1000px) {
+            .grid-5 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .grid-5, .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .grid-5, .grid-3, .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Image Card */
+        .card {
+            background: #111;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1a1a1a;
+        }
+
+        .card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .card-info {
+            padding: 12px 14px;
+        }
+
+        .card-info h3 {
+            font-size: 0.9rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .card-info p {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .card-info .prompt {
+            font-size: 0.7rem;
+            color: #555;
+            margin-top: 8px;
+            font-style: italic;
+            background: #0a0a0a;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .label {
+            display: inline-block;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 4px;
+            margin-top: 6px;
+        }
+
+        .label-blue { background: rgba(0,217,255,0.15); color: #00d9ff; }
+        .label-purple { background: rgba(168,85,247,0.15); color: #a855f7; }
+        .label-green { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .label-pink { background: rgba(236,72,153,0.15); color: #ec4899; }
+
+        /* Editing Section */
+        .edit-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 800px) {
+            .edit-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .original-card {
+            position: sticky;
+            top: 20px;
+        }
+
+        .original-card .card {
+            border: 2px solid rgba(0,217,255,0.3);
+        }
+
+        .original-label {
+            font-size: 0.8rem;
+            color: #00d9ff;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .edits-label {
+            font-size: 0.8rem;
+            color: #ec4899;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .edit-type {
+            font-size: 0.6rem;
+            background: rgba(236,72,153,0.1);
+            color: #ec4899;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Reference Table */
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .ref-table th,
+        .ref-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .ref-table th {
+            color: #888;
+            font-weight: 500;
+            background: #0d0d0d;
+        }
+
+        .ref-table td {
+            color: #ccc;
+        }
+
+        .ref-table code {
+            background: #111;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #7ee787;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 24px;
+            text-align: center;
+            color: #444;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        footer a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #00d9ff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="credits-bar">
+            Built by <a href="#">AJ Ahmed</a>
+            <span>|</span>
+            Powered by <a href="https://ai.google.dev/" target="_blank">Nano Banana Pro</a> (Gemini 3 Pro Image)
+            <span>|</span>
+            Integrated with <a href="https://github.com/anthropics/claude-code" target="_blank">Claude Code</a>
+        </div>
+
+        <h1>Claude Code Now Generates Images</h1>
+        <p>A custom skill that gives Claude Code the ability to generate and edit images directly from the terminal using Google's Nano Banana Pro model.</p>
+
+        <div class="hero-note">
+            <strong>What this demonstrates:</strong> By creating a Claude Code skill that integrates Nano Banana Pro (Gemini 3 Pro Image), Claude Code can now generate images, edit photos, render text, and output in any aspect ratio or resolution - all from natural language in the terminal. Every image on this page was generated during a single conversation.
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Aspect Ratios -->
+        <section>
+            <div class="section-header">
+                <h2>Generate in Any Aspect Ratio</h2>
+                <p>Same prompt, different dimensions. Choose the right format for your use case.</p>
+            </div>
+
+            <div class="command-box">
+                <span class="dim"># Add --aspect to specify dimensions</span><br>
+                python3 generate_image.py "your prompt" output.png --aspect 16:9
+            </div>
+
+            <div class="image-grid grid-5">
+                <div class="card">
+                    <img src="images/aspect-ratios/1x1-square.png" alt="1:1">
+                    <div class="card-info">
+                        <h3>1:1 Square</h3>
+                        <p>Icons, avatars, social posts</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/aspect-ratios/16x9-wide.png" alt="16:9">
+                    <div class="card-info">
+                        <h3>16:9 Widescreen</h3>
+                        <p>Banners, YouTube, desktop</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/aspect-ratios/9x16-portrait.png" alt="9:16">
+                    <div class="card-info">
+                        <h3>9:16 Portrait</h3>
+                        <p>Stories, TikTok, mobile</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/aspect-ratios/4x3-standard.png" alt="4:3">
+                    <div class="card-info">
+                        <h3>4:3 Standard</h3>
+                        <p>Presentations, tablets</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/aspect-ratios/21x9-ultrawide.png" alt="21:9">
+                    <div class="card-info">
+                        <h3>21:9 Ultrawide</h3>
+                        <p>Cinematic, hero banners</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Styles -->
+        <section>
+            <div class="section-header">
+                <h2>Generate in Any Style</h2>
+                <p>Describe the aesthetic you want. Same subject rendered five different ways.</p>
+            </div>
+
+            <div class="command-box">
+                <span class="dim"># Include style in your prompt</span><br>
+                "mountain landscape, watercolor painting style, soft brushstrokes"
+            </div>
+
+            <div class="image-grid grid-5">
+                <div class="card">
+                    <img src="images/styles/flat-design.png" alt="Flat">
+                    <div class="card-info">
+                        <h3>Flat Design</h3>
+                        <p>Vector art, simple shapes</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/styles/3d-render.png" alt="3D">
+                    <div class="card-info">
+                        <h3>3D Render</h3>
+                        <p>Volumetric, glossy</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/styles/photorealistic.png" alt="Photo">
+                    <div class="card-info">
+                        <h3>Photorealistic</h3>
+                        <p>DSLR quality, sharp</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/styles/watercolor.png" alt="Watercolor">
+                    <div class="card-info">
+                        <h3>Watercolor</h3>
+                        <p>Soft brushstrokes, artistic</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/styles/minimalist.png" alt="Minimal">
+                    <div class="card-info">
+                        <h3>Minimalist</h3>
+                        <p>Clean lines, negative space</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resolutions -->
+        <section>
+            <div class="section-header">
+                <h2>Choose Your Resolution</h2>
+                <p>Balance quality and speed. 1K for thumbnails, 4K for prints.</p>
+            </div>
+
+            <div class="command-box">
+                <span class="dim"># Add --size for resolution</span><br>
+                python3 generate_image.py "prompt" output.png --size 2K
+            </div>
+
+            <div class="image-grid grid-3">
+                <div class="card">
+                    <img src="images/resolutions/resolution-1k.png" alt="1K">
+                    <div class="card-info">
+                        <h3>1K (~1024px)</h3>
+                        <p>Fast generation, web thumbnails</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/resolutions/resolution-2k.png" alt="2K">
+                    <div class="card-info">
+                        <h3>2K (~2048px)</h3>
+                        <p>Balanced, standard web use</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/resolutions/resolution-4k.png" alt="4K">
+                    <div class="card-info">
+                        <h3>4K (~4096px)</h3>
+                        <p>Maximum detail, print-ready</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Editing -->
+        <section>
+            <div class="section-header">
+                <h2>Edit Images with Natural Language</h2>
+                <p>Make precise changes by describing what you want. No masks, no complex tools.</p>
+            </div>
+
+            <div class="command-box">
+                <span class="dim"># Use --input to edit an existing image</span><br>
+                python3 generate_image.py "turn on the fireplace" output.png --input original.png
+            </div>
+
+            <div class="edit-layout">
+                <div class="original-card">
+                    <div class="original-label">Original Image</div>
+                    <div class="card">
+                        <img src="images/editing/original.png" alt="Original">
+                        <div class="card-info">
+                            <p class="prompt">"a modern living room with a grey sofa, wooden coffee table, large window showing a garden, fireplace turned off"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="edits-label">Edited Versions (same dimensions preserved)</div>
+                    <div class="image-grid grid-2">
+                        <div class="card">
+                            <img src="images/editing/edit-remove-plant.png" alt="Remove plant">
+                            <div class="card-info">
+                                <span class="edit-type">Remove Object</span>
+                                <h3>Plant Removed</h3>
+                                <p class="prompt">"remove the plant from the coffee table"</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <img src="images/editing/edit-fireplace-on.png" alt="Fireplace on">
+                            <div class="card-info">
+                                <span class="edit-type">Change State</span>
+                                <h3>Fireplace Lit</h3>
+                                <p class="prompt">"turn on the fireplace with warm flames"</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <img src="images/editing/edit-blue-sofa.png" alt="Blue sofa">
+                            <div class="card-info">
+                                <span class="edit-type">Change Color</span>
+                                <h3>Navy Blue Sofa</h3>
+                                <p class="prompt">"change the sofa to navy blue"</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <img src="images/editing/edit-winter-view.png" alt="Winter">
+                            <div class="card-info">
+                                <span class="edit-type">Change Background</span>
+                                <h3>Winter Scene</h3>
+                                <p class="prompt">"change the garden view to a snowy winter scene"</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 20px;">
+                        <img src="images/editing/edit-evening.png" alt="Evening">
+                        <div class="card-info">
+                            <span class="edit-type">Change Lighting</span>
+                            <h3>Cozy Evening</h3>
+                            <p class="prompt">"change to evening with warm indoor lighting and lamps turned on"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Text -->
+        <section>
+            <div class="section-header">
+                <h2>Render Text in Images</h2>
+                <p>Include text in your prompt for logos, posters, and signage.</p>
+            </div>
+
+            <div class="command-box">
+                <span class="dim"># Put text in quotes within your prompt</span><br>
+                "logo with text 'QUANTUM' in bold futuristic font"
+            </div>
+
+            <div class="image-grid grid-3">
+                <div class="card">
+                    <img src="images/text/logo-text.png" alt="Logo">
+                    <div class="card-info">
+                        <h3>Tech Logo</h3>
+                        <p class="prompt">"modern tech logo with text 'QUANTUM' in bold futuristic font, blue to purple gradient"</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/text/quote-poster.png" alt="Poster">
+                    <div class="card-info">
+                        <h3>Quote Poster</h3>
+                        <p class="prompt">"motivational poster with 'The future belongs to those who believe...'"</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="images/text/menu-board.png" alt="Menu">
+                    <div class="card-info">
+                        <h3>Menu Board</h3>
+                        <p class="prompt">"coffee shop menu with 'COFFEE HOUSE', chalkboard style"</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reference -->
+        <section>
+            <div class="section-header">
+                <h2>Quick Reference</h2>
+                <p>All available options at a glance.</p>
+            </div>
+
+            <table class="ref-table">
+                <tr>
+                    <th>Option</th>
+                    <th>Values</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td>Aspect Ratio</td>
+                    <td>1:1, 16:9, 9:16, 4:3, 3:4, 21:9, 2:3, 3:2, 4:5, 5:4</td>
+                    <td><code>--aspect 16:9</code></td>
+                </tr>
+                <tr>
+                    <td>Resolution</td>
+                    <td>1K, 2K, 4K</td>
+                    <td><code>--size 2K</code></td>
+                </tr>
+                <tr>
+                    <td>Edit Image</td>
+                    <td>Path to source image</td>
+                    <td><code>--input photo.png</code></td>
+                </tr>
+                <tr>
+                    <td>Style Reference</td>
+                    <td>Up to 14 reference images</td>
+                    <td><code>--ref style.png</code></td>
+                </tr>
+            </table>
+        </section>
+
+    </div>
+
+    <footer>
+        Every image on this page was generated by Claude Code using the image generation skill.<br>
+        <a href="https://github.com/anthropics/claude-code" target="_blank">Learn more about Claude Code</a>
+    </footer>
+
+</body>
+</html>
